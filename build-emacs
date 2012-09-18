@@ -1,0 +1,106 @@
+#!/bin/sh
+
+
+set -e
+
+ROOT_DIR="`pwd`"
+BUILD_DIR=build
+SRC_DIR=emacs
+
+
+rm -rf ${BUILD_DIR}
+mkdir ${BUILD_DIR}
+
+cd ${SRC_DIR}
+REV=`git log --no-color --pretty=format:%h origin/master^..origin/master | head -n1`
+
+
+
+git pull
+git archive --format tar master | tar -C ../${BUILD_DIR} -xvf -
+
+cd ../${BUILD_DIR}
+
+patch -p1  -i ../lion-fullscreen.patch 
+
+STRINGS="nextstep/Cocoa/Emacs.base/Contents/Resources/English.lproj/InfoPlist.strings nextstep/Cocoa/Emacs.base/Contents/Info.plist nextstep/GNUstep/Emacs.base/Resources/Emacs.desktop  nextstep/GNUstep/Emacs.base/Resources/Info-gnustep.plist"
+
+DATE=`date -u +"%Y-%m-%d %H:%M:%S %Z"`
+DAY=`date -u +"%Y-%m-%d"`
+ORIG=`grep ^AC_INIT configure.ac`
+VNUM=`echo $ORIG | cut -d\  -f2-999 | sed s/\)$//`
+VERS="$VNUM $DAY Git $REV"
+DESCR="Emacs_Cocoa_${VNUM}_${DAY}_Git_${REV}"
+
+#autogen/copy_autogen
+./autogen.sh
+#sed -e "s/'$VNUM'/'$VNUM-$DAY.Git-$REV'/" -i '' configure
+
+
+#export PKG_CONFIG_PATH=/usr/local/Library/Homebrew/pkgconfig
+export PKG_CONFIG_PATH=../pkgconfig
+
+# l="libtiff-4 MagickWand ImageMagick Wand MagickCore librsvg-2.0"
+
+# CFLAGS="${CFLAGS} $(pkg-config --cflags $l)"
+# LIBS="${LIBS} $(pkg-config --libs $l)"
+
+
+# CFLAGS="${CLFAGS} -I$(brew --prefix jpeg)/include"
+# LIBS="${LIBS} -L$(brew --prefix jpeg)/lib -ljpeg"
+
+CFLAGS="${CFLAGS} -pipe -march=nocona"
+export CC=gcc
+export CFLAGS
+#export LIBS
+
+./configure \
+    --build=x86_64-apple-darwin \
+    --without-dbus --with-ns
+
+make bootstrap -j8 || make clean bootstrap && make install
+
+for f in $STRINGS; do
+    sed -e "s/$VNUM/$VERS/" -i '' $f
+done
+
+
+rm -rf _out
+mkdir _out
+
+rsync -aE nextstep/Emacs.app _out
+rsync -aE ../emacs-dmg/* _out
+
+for f in `find  _out/Emacs.app/Contents/MacOS/ -type f`; do dylibbundler -of -cd  -b -x $f -d _out/Emacs.app/Contents/Resources/lib -p @executable_path/../Resources/lib/; done
+
+
+#find _out/Emacs.app/Contents/MacOS/ -type f | xargs -n 1 otool  -L | grep /local/  |awk '{print $1}' | xargs otool -L | grep /local/ | awk  '{print $1}'  |grep -v ':'
+#mkdir _out/Emacs.app/Contents/Resources/lib
+#cp /usr/local/lib/libgnutls.26.dylib _out/Emacs.app/Contents/Resources/lib/
+#install_name_tool -change /usr/local/lib/libgnutls.26.dylib @executable_path/../Resources/lib/libgnutls.26.dylib _out/Emacs.app/Contents/MacOS/Emacs
+
+# otool -L _out/Emacs.app/Contents/Resources/lib/libgnutls.26.dylib
+#cp /usr/local/lib/libgnutls.26.dylib /usr/local/lib/libgcrypt.11.dylib /usr/local/lib/libgpg-error.0.dylib /usr/local/lib/libtasn1.3.dylib _out/Emacs.app/Contents/Resources/lib/
+# chmod 644 _out/Emacs.app/Contents/Resources/lib/libgnutls.26.dylib
+# for f in libgcrypt.11.dylib libgpg-error.0.dylib libtasn1.3.dylib ; do install_name_tool -change /usr/local/lib/$f @executable_path/lib/$f _out/Emacs.app/Contents/Resources/lib/libgnutls.26.dylib; done
+
+#for f in libgnutls.26.dylib libgcrypt.11.dylib libgpg-error.0.dylib libtasn1.3.dylib ; do install_name_tool -change /usr/local/lib/$f @executable_path/../Resources/lib/$f _out/Emacs.app/Contents/Resources/lib/libgnutls.26.dylib; done
+
+
+
+
+Rez -o "_out/More.../Alternative Icon" _out/icon.r
+rm _out/icon.r
+
+# Set the finder info bit that says the file has a custom icon.
+xattr -x -w com.apple.FinderInfo "00 00 00 00 00 00 00 00 04 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00" "_out/More.../Alternative Icon"
+
+mv _out/dot-DS_Store _out/.DS_Store
+SetFile -a Vc _out/background.*
+
+rm -f ../tmp.dmg
+hdiutil makehybrid -hfs -hfs-volume-name "$DESCR" -hfs-openfolder _out _out -o ../tmp.dmg
+hdiutil convert -format UDZO ../tmp.dmg -o "../${DESCR}.dmg"
+
+rm -rf ${BUILD_DIR}
+rm -rf tmp.dmg
