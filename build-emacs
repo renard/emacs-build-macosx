@@ -23,7 +23,7 @@ cd ../${BUILD_DIR}
 
 patch -p1  -i ../lion-fullscreen.patch 
 
-STRINGS="nextstep/Cocoa/Emacs.base/Contents/Resources/English.lproj/InfoPlist.strings nextstep/Cocoa/Emacs.base/Contents/Info.plist nextstep/GNUstep/Emacs.base/Resources/Emacs.desktop  nextstep/GNUstep/Emacs.base/Resources/Info-gnustep.plist"
+STRINGS="nextstep/Cocoa/Emacs.base/Contents/Resources/English.lproj/InfoPlist.strings nextstep/Cocoa/Emacs.base/Contents/Info.plist"
 
 DATE=`date -u +"%Y-%m-%d %H:%M:%S %Z"`
 DAY=`date -u +"%Y-%m-%d"`
