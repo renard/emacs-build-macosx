@@ -1,0 +1,223 @@
+diff --git a/lisp/term/ns-win.el b/lisp/term/ns-win.el
+index 06b6747..97cbc3d 100644
+--- a/lisp/term/ns-win.el
++++ b/lisp/term/ns-win.el
+@@ -928,6 +928,10 @@ See the documentation of `create-fontset-from-fontset-spec' for the format.")
+ (add-to-list 'frame-creation-function-alist '(ns . x-create-frame-with-faces))
+ (add-to-list 'window-system-initialization-alist '(ns . ns-initialize-window-system))
+ 
++(declare-function ns-toggle-fullscreen-internal "nsfns.m" ())
++(defun ns-toggle-fullscreen ()
++  (interactive)
++  (ns-toggle-fullscreen-internal))
+ 
+ (provide 'ns-win)
+ 
+diff --git a/src/nsfns.m b/src/nsfns.m
+index af83958..fa6ba7c 100644
+--- a/src/nsfns.m
++++ b/src/nsfns.m
+@@ -2604,6 +2604,20 @@ Value is t if tooltip was open, nil otherwise.  */)
+   return Qt;
+ }
+ 
++DEFUN ("ns-toggle-fullscreen-internal", Fns_toggle_fullscreen_internal, Sns_toggle_fullscreen_internal,
++        0, 0, 0,
++        doc: /* Toggle fulscreen mode */)
++()
++{
++  struct frame *f = SELECTED_FRAME();
++  EmacsWindow *window = ns_get_window(f);
++
++#if defined (NS_IMPL_COCOA) && MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_7
++  [window toggleFullScreen:nil];
++#endif
++
++  return Qnil;
++}
+ 
+ /* ==========================================================================
+ 
+@@ -2760,6 +2774,8 @@ be used as the image of the icon representing the frame.  */);
+   defsubr (&Sx_show_tip);
+   defsubr (&Sx_hide_tip);
+ 
++  defsubr (&Sns_toggle_fullscreen_internal);
++
+   /* used only in fontset.c */
+   check_window_system_func = check_ns;
+ 
+diff --git a/src/nsmenu.m b/src/nsmenu.m
+index dc9b80a..f1036a5 100644
+--- a/src/nsmenu.m
++++ b/src/nsmenu.m
+@@ -1018,7 +1018,7 @@ free_frame_tool_bar (FRAME_PTR f)
+    -------------------------------------------------------------------------- */
+ {
+   BLOCK_INPUT;
+-  [[FRAME_NS_VIEW (f) toolbar] setVisible: NO];
++  [[FRAME_NS_VIEW (f) window] setToolbar: nil];
+   FRAME_TOOLBAR_HEIGHT (f) = 0;
+   UNBLOCK_INPUT;
+ }
+@@ -1035,6 +1035,8 @@ update_frame_tool_bar (FRAME_PTR f)
+   EmacsToolbar *toolbar = [view toolbar];
+ 
+   BLOCK_INPUT;
++  [window setToolbar: toolbar];
++
+   [toolbar clearActive];
+ 
+   /* update EmacsToolbar as in GtkUtils, build items list */
+diff --git a/src/nsterm.h b/src/nsterm.h
+index b20621a..f94a62e 100644
+--- a/src/nsterm.h
++++ b/src/nsterm.h
+@@ -38,6 +38,12 @@ along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>.  */
+ #ifndef MAC_OS_X_VERSION_10_6
+ #define MAC_OS_X_VERSION_10_6 1060
+ #endif
++#ifndef MAC_OS_X_VERSION_10_7
++#define MAC_OS_X_VERSION_10_7 1070
++#endif
++#ifndef MAC_OS_X_VERSION_10_8
++#define MAC_OS_X_VERSION_10_8 1080
++#endif
+ #endif /* NS_IMPL_COCOA */
+ 
+ #ifdef __OBJC__
+diff --git a/src/nsterm.m b/src/nsterm.m
+index 4c0e0e5..500ee34 100644
+--- a/src/nsterm.m
++++ b/src/nsterm.m
+@@ -5328,38 +5328,7 @@ ns_term_shutdown (int sig)
+ #endif
+   if (rows < MINHEIGHT)
+     rows = MINHEIGHT;
+-#ifdef NS_IMPL_COCOA
+-  {
+-    /* this sets window title to have size in it; the wm does this under GS */
+-    NSRect r = [[self window] frame];
+-    if (r.size.height == frameSize.height && r.size.width == frameSize.width)
+-      {
+-        if (old_title != 0)
+-          {
+-            xfree (old_title);
+-            old_title = 0;
+-          }
+-      }
+-    else
+-      {
+-        char *size_title;
+-        NSWindow *window = [self window];
+-        if (old_title == 0)
+-          {
+-            const char *t = [[[self window] title] UTF8String];
+-            char *pos = strstr (t, "  —  ");
+-            if (pos)
+-              *pos = '\0';
+-            old_title = xstrdup (t);
+-          }
+-        size_title = xmalloc (strlen (old_title) + 40);
+-	esprintf (size_title, "%s  —  (%d x %d)", old_title, cols, rows);
+-        [window setTitle: [NSString stringWithUTF8String: size_title]];
+-        [window display];
+-        xfree (size_title);
+-      }
+-  }
+-#endif /* NS_IMPL_COCOA */
++
+ /*fprintf (stderr,"    ...size became %.0f x %.0f  (%d x %d)\n",frameSize.width,frameSize.height,cols,rows); */
+ 
+   return frameSize;
+@@ -5381,14 +5350,6 @@ ns_term_shutdown (int sig)
+   NSTRACE (windowDidResize);
+ /*fprintf (stderr,"windowDidResize: %.0f\n",[theWindow frame].size.height); */
+ 
+-#ifdef NS_IMPL_COCOA
+-  if (old_title != 0)
+-    {
+-      xfree (old_title);
+-      old_title = 0;
+-    }
+-#endif /* NS_IMPL_COCOA */
+-
+   /* Avoid loop under GNUstep due to call at beginning of this function.
+      (x_set_window_size causes a resize which causes
+      a "windowDidResize" which calls x_set_window_size).  */
+@@ -5416,6 +5377,60 @@ ns_term_shutdown (int sig)
+   ns_send_appdefined (-1);
+ }
+ 
++#if defined (NS_IMPL_COCOA) && MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_7
++- (void)windowDidEnterFullScreen:(NSNotification *)notification
++{
++    NSTRACE (windowDidEnterFullScreen);
++    /* NSLog(@"Calling windowDidEnterFullScreen"); */
++    
++    NSWindow *window = [self window];
++    NSRect wr = [window frame];
++    int w = (int)wr.size.width - emacsframe->border_width;
++    int h = (int)wr.size.height;
++    cols = FRAME_PIXEL_WIDTH_TO_TEXT_COLS(emacsframe, w);
++    rows = FRAME_PIXEL_HEIGHT_TO_TEXT_LINES(emacsframe, h);
++    /* NSLog(@"window_size=%dx%d (%dx%d)", w, h, cols, rows); */
++    FRAME_PIXEL_WIDTH (emacsframe) = w;
++    FRAME_PIXEL_HEIGHT (emacsframe) = h;
++    change_frame_size (emacsframe, rows, cols, 0, 1, 0);
++    SET_FRAME_GARBAGED (emacsframe);
++    cancel_mouse_face (emacsframe);
++    ns_send_appdefined (-1);
++}
++#endif
++
++#if defined (NS_IMPL_COCOA) && MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_7
++- (void)windowDidExitFullScreen:(NSNotification *)notification
++{
++    NSTRACE (windowDidExitFullScreen);
++    /* NSLog(@"Calling windowDidExitFullScreen"); */
++    
++    NSWindow *window = [self window];
++    NSRect wr = [window frame];
++    int w = (int)wr.size.width - emacsframe->border_width;
++    int h = (int)wr.size.height
++    - FRAME_NS_TITLEBAR_HEIGHT (emacsframe)
++    - FRAME_TOOLBAR_HEIGHT (emacsframe);
++    cols = FRAME_PIXEL_WIDTH_TO_TEXT_COLS(emacsframe, w);
++    rows = FRAME_PIXEL_HEIGHT_TO_TEXT_LINES(emacsframe, h);
++    /* NSLog(@"window_size=%dx%d (%dx%d)", w, h, cols, rows); */
++    FRAME_PIXEL_WIDTH (emacsframe) = w;
++    FRAME_PIXEL_HEIGHT (emacsframe) = h;
++    change_frame_size (emacsframe, rows, cols, 0, 1, 0);
++    SET_FRAME_GARBAGED (emacsframe);
++    cancel_mouse_face (emacsframe);
++    ns_send_appdefined (-1);
++}
++#endif
++
++#if defined (NS_IMPL_COCOA) && MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_7
++- (NSApplicationPresentationOptions)window:(NSWindow *)window willUseFullScreenPresentationOptions:(NSApplicationPresentationOptions)proposedOptions
++{
++    /* NSLog(@"Calling window:willUseFullScreenPresentationOptions: %d", proposedOptions); */
++    return proposedOptions | NSApplicationPresentationAutoHideToolbar;
++}
++#endif
++
+ 
+ - (void)windowDidBecomeKey: (NSNotification *)notification
+ /* cf. x_detect_focus_change(), x_focus_changed(), x_new_focus_frame() */
+@@ -5586,6 +5601,14 @@ ns_term_shutdown (int sig)
+   [NSApp registerServicesMenuSendTypes: ns_send_types
+                            returnTypes: nil];
+ 
++#if defined (NS_IMPL_COCOA) && MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_7
++  if (NSApp != nil && [NSApp isActive])
++  {
++    [NSApp setPresentationOptions: NSApplicationPresentationFullScreen | [NSApp presentationOptions] ];
++    [win setCollectionBehavior: NSWindowCollectionBehaviorFullScreenPrimary | [win collectionBehavior] ];
++  }
++#endif
++
+   ns_window_num++;
+   return self;
+ }
