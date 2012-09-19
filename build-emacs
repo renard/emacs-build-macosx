@@ -71,6 +71,7 @@ mkdir _out
 
 rsync -aE nextstep/Emacs.app _out
 rsync -aE ../emacs-dmg/* _out
+rsync -aE ../emacs/src  _out/Emacs.app/Contents/Resources/
 
 
 # Copy dylibs into the Emacs.app package
