@@ -23,6 +23,7 @@ git pull
 git archive --format tar $commit | tar -C ../${BUILD_DIR} -xvf -
 
 REV=`git log --no-color --pretty=format:%h ${commit}^..${commit} | head -n1`
+TIMESTAMP=`git log -n 1 --no-color --pretty='format:%at' ${commit}`
 
 cd ../${BUILD_DIR}
 
@@ -32,7 +33,6 @@ STRINGS="
  nextstep/Cocoa/Emacs.base/Contents/Resources/English.lproj/InfoPlist.strings
  nextstep/Cocoa/Emacs.base/Contents/Info.plist"
 
-TIMESTAMP="git log -n 1 --pretty='format:%at' $commit"
 DAY=`date -u -r $TIMESTAMP +"%Y-%m-%d"`
 ORIG=`grep ^AC_INIT configure.ac`
 VNUM=`echo $ORIG | cut -d\  -f2-999 | sed s/\)$//`
