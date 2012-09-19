@@ -13,10 +13,16 @@ mkdir ${BUILD_DIR}
 
 cd ${SRC_DIR}
 
-git pull
-git archive --format tar master | tar -C ../${BUILD_DIR} -xvf -
+if test -n "$1"; then
+    commit="$1"
+else
+    commit="origin/master"
+fi
 
-REV=`git log --no-color --pretty=format:%h origin/master^..origin/master | head -n1`
+git pull
+git archive --format tar $commit | tar -C ../${BUILD_DIR} -xvf -
+
+REV=`git log --no-color --pretty=format:%h ${commit}^..${commit} | head -n1`
 
 cd ../${BUILD_DIR}
 
