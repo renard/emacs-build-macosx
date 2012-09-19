@@ -73,19 +73,6 @@ rsync -aE ../emacs-dmg/* _out
 for f in `find  _out/Emacs.app/Contents/MacOS/ -type f`; do dylibbundler -of -cd  -b -x $f -d _out/Emacs.app/Contents/Resources/lib -p @executable_path/../Resources/lib/; done
 
 
-#find _out/Emacs.app/Contents/MacOS/ -type f | xargs -n 1 otool  -L | grep /local/  |awk '{print $1}' | xargs otool -L | grep /local/ | awk  '{print $1}'  |grep -v ':'
-#mkdir _out/Emacs.app/Contents/Resources/lib
-#cp /usr/local/lib/libgnutls.26.dylib _out/Emacs.app/Contents/Resources/lib/
-#install_name_tool -change /usr/local/lib/libgnutls.26.dylib @executable_path/../Resources/lib/libgnutls.26.dylib _out/Emacs.app/Contents/MacOS/Emacs
-
-# otool -L _out/Emacs.app/Contents/Resources/lib/libgnutls.26.dylib
-#cp /usr/local/lib/libgnutls.26.dylib /usr/local/lib/libgcrypt.11.dylib /usr/local/lib/libgpg-error.0.dylib /usr/local/lib/libtasn1.3.dylib _out/Emacs.app/Contents/Resources/lib/
-# chmod 644 _out/Emacs.app/Contents/Resources/lib/libgnutls.26.dylib
-# for f in libgcrypt.11.dylib libgpg-error.0.dylib libtasn1.3.dylib ; do install_name_tool -change /usr/local/lib/$f @executable_path/lib/$f _out/Emacs.app/Contents/Resources/lib/libgnutls.26.dylib; done
-
-#for f in libgnutls.26.dylib libgcrypt.11.dylib libgpg-error.0.dylib libtasn1.3.dylib ; do install_name_tool -change /usr/local/lib/$f @executable_path/../Resources/lib/$f _out/Emacs.app/Contents/Resources/lib/libgnutls.26.dylib; done
-
-
 
 
 Rez -o "_out/More.../Alternative Icon" _out/icon.r
