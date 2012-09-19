@@ -33,7 +33,7 @@ STRINGS="
  nextstep/Cocoa/Emacs.base/Contents/Resources/English.lproj/InfoPlist.strings
  nextstep/Cocoa/Emacs.base/Contents/Info.plist"
 
-DAY=`date -u -r $TIMESTAMP +"%Y-%m-%d"`
+DAY=`date -u -r $TIMESTAMP +"%Y-%m-%d_%H-%M-%S"`
 ORIG=`grep ^AC_INIT configure.ac`
 VNUM=`echo $ORIG | cut -d\  -f2-999 | sed s/\)$//`
 VERS="$VNUM $DAY Git $REV"
