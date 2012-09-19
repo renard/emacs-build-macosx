@@ -70,9 +70,13 @@ mkdir _out
 rsync -aE nextstep/Emacs.app _out
 rsync -aE ../emacs-dmg/* _out
 
-for f in `find  _out/Emacs.app/Contents/MacOS/ -type f`; do dylibbundler -of -cd  -b -x $f -d _out/Emacs.app/Contents/Resources/lib -p @executable_path/../Resources/lib/; done
 
-
+# Copy dylibs into the Emacs.app package
+for f in `find  _out/Emacs.app/Contents/MacOS/ -type f`; do
+    dylibbundler -of -cd  -b -x $f \
+	-d _out/Emacs.app/Contents/Resources/lib \
+	-p @executable_path/../Resources/lib/
+done
 
 
 Rez -o "_out/More.../Alternative Icon" _out/icon.r
