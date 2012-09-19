@@ -32,8 +32,8 @@ STRINGS="
  nextstep/Cocoa/Emacs.base/Contents/Resources/English.lproj/InfoPlist.strings
  nextstep/Cocoa/Emacs.base/Contents/Info.plist"
 
-DATE=`date -u +"%Y-%m-%d %H:%M:%S %Z"`
-DAY=`date -u +"%Y-%m-%d"`
+TIMESTAMP="git log -n 1 --pretty='format:%at' $commit"
+DAY=`date -u -r $TIMESTAMP +"%Y-%m-%d"`
 ORIG=`grep ^AC_INIT configure.ac`
 VNUM=`echo $ORIG | cut -d\  -f2-999 | sed s/\)$//`
 VERS="$VNUM $DAY Git $REV"
