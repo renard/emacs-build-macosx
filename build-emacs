@@ -12,12 +12,11 @@ rm -rf ${BUILD_DIR}
 mkdir ${BUILD_DIR}
 
 cd ${SRC_DIR}
-REV=`git log --no-color --pretty=format:%h origin/master^..origin/master | head -n1`
-
-
 
 git pull
 git archive --format tar master | tar -C ../${BUILD_DIR} -xvf -
+
+REV=`git log --no-color --pretty=format:%h origin/master^..origin/master | head -n1`
 
 cd ../${BUILD_DIR}
 
