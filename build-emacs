@@ -48,7 +48,7 @@ DESCR="Emacs_Cocoa_${VNUM}_${DAY}_Git_${REV}"
 ./autogen.sh
 
 # Use Homebrew libxml pkgconfig
-export PKG_CONFIG_PATH=/usr/local/Library/Homebrew/pkgconfig
+export PKG_CONFIG_PATH=../pkgconfig
 
 CFLAGS="${CFLAGS} -pipe -march=nocona"
 export CC=gcc
