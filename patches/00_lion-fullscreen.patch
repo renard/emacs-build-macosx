@@ -14,10 +14,10 @@ index 06b6747..97cbc3d 100644
  (provide 'ns-win)
  
 diff --git a/src/nsfns.m b/src/nsfns.m
-index af83958..fa6ba7c 100644
+index 072005d..72a7348 100644
 --- a/src/nsfns.m
 +++ b/src/nsfns.m
-@@ -2604,6 +2604,20 @@ Value is t if tooltip was open, nil otherwise.  */)
+@@ -2588,6 +2588,20 @@ Value is t if tooltip was open, nil otherwise.  */)
    return Qt;
  }
  
@@ -38,7 +38,7 @@ index af83958..fa6ba7c 100644
  
  /* ==========================================================================
  
-@@ -2760,6 +2774,8 @@ be used as the image of the icon representing the frame.  */);
+@@ -2744,6 +2758,8 @@ be used as the image of the icon representing the frame.  */);
    defsubr (&Sx_show_tip);
    defsubr (&Sx_hide_tip);
  
@@ -48,10 +48,10 @@ index af83958..fa6ba7c 100644
    check_window_system_func = check_ns;
  
 diff --git a/src/nsmenu.m b/src/nsmenu.m
-index dc9b80a..f1036a5 100644
+index 907d3ea..0974c04 100644
 --- a/src/nsmenu.m
 +++ b/src/nsmenu.m
-@@ -1018,7 +1018,7 @@ free_frame_tool_bar (FRAME_PTR f)
+@@ -1013,7 +1013,7 @@ free_frame_tool_bar (FRAME_PTR f)
     -------------------------------------------------------------------------- */
  {
    BLOCK_INPUT;
@@ -60,7 +60,7 @@ index dc9b80a..f1036a5 100644
    FRAME_TOOLBAR_HEIGHT (f) = 0;
    UNBLOCK_INPUT;
  }
-@@ -1035,6 +1035,8 @@ update_frame_tool_bar (FRAME_PTR f)
+@@ -1030,6 +1030,8 @@ update_frame_tool_bar (FRAME_PTR f)
    EmacsToolbar *toolbar = [view toolbar];
  
    BLOCK_INPUT;
@@ -70,7 +70,7 @@ index dc9b80a..f1036a5 100644
  
    /* update EmacsToolbar as in GtkUtils, build items list */
 diff --git a/src/nsterm.h b/src/nsterm.h
-index b20621a..f94a62e 100644
+index f3adab8..96f853c 100644
 --- a/src/nsterm.h
 +++ b/src/nsterm.h
 @@ -38,6 +38,12 @@ along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>.  */
@@ -87,10 +87,10 @@ index b20621a..f94a62e 100644
  
  #ifdef __OBJC__
 diff --git a/src/nsterm.m b/src/nsterm.m
-index 4c0e0e5..500ee34 100644
+index 0b26508..cb7ff61 100644
 --- a/src/nsterm.m
 +++ b/src/nsterm.m
-@@ -5328,38 +5328,7 @@ ns_term_shutdown (int sig)
+@@ -5443,38 +5443,7 @@ not_in_argv (NSString *arg)
  #endif
    if (rows < MINHEIGHT)
      rows = MINHEIGHT;
@@ -130,7 +130,7 @@ index 4c0e0e5..500ee34 100644
  /*fprintf (stderr,"    ...size became %.0f x %.0f  (%d x %d)\n",frameSize.width,frameSize.height,cols,rows); */
  
    return frameSize;
-@@ -5381,14 +5350,6 @@ ns_term_shutdown (int sig)
+@@ -5496,14 +5465,6 @@ not_in_argv (NSString *arg)
    NSTRACE (windowDidResize);
  /*fprintf (stderr,"windowDidResize: %.0f\n",[theWindow frame].size.height); */
  
@@ -145,7 +145,7 @@ index 4c0e0e5..500ee34 100644
    /* Avoid loop under GNUstep due to call at beginning of this function.
       (x_set_window_size causes a resize which causes
       a "windowDidResize" which calls x_set_window_size).  */
-@@ -5416,6 +5377,60 @@ ns_term_shutdown (int sig)
+@@ -5522,6 +5483,60 @@ not_in_argv (NSString *arg)
    ns_send_appdefined (-1);
  }
  
@@ -154,11 +154,11 @@ index 4c0e0e5..500ee34 100644
 +{
 +    NSTRACE (windowDidEnterFullScreen);
 +    /* NSLog(@"Calling windowDidEnterFullScreen"); */
-+    
 +    NSWindow *window = [self window];
 +    NSRect wr = [window frame];
 +    int w = (int)wr.size.width - emacsframe->border_width;
 +    int h = (int)wr.size.height;
++    NSView *view = FRAME_NS_VIEW (emacsframe);
 +    cols = FRAME_PIXEL_WIDTH_TO_TEXT_COLS(emacsframe, w);
 +    rows = FRAME_PIXEL_HEIGHT_TO_TEXT_LINES(emacsframe, h);
 +    /* NSLog(@"window_size=%dx%d (%dx%d)", w, h, cols, rows); */
@@ -167,6 +167,7 @@ index 4c0e0e5..500ee34 100644
 +    change_frame_size (emacsframe, rows, cols, 0, 1, 0);
 +    SET_FRAME_GARBAGED (emacsframe);
 +    cancel_mouse_face (emacsframe);
++    [view setFrame: NSMakeRect (0, 0, w, h)];
 +    ns_send_appdefined (-1);
 +}
 +#endif
@@ -176,7 +177,6 @@ index 4c0e0e5..500ee34 100644
 +{
 +    NSTRACE (windowDidExitFullScreen);
 +    /* NSLog(@"Calling windowDidExitFullScreen"); */
-+    
 +    NSWindow *window = [self window];
 +    NSRect wr = [window frame];
 +    int w = (int)wr.size.width - emacsframe->border_width;
@@ -206,7 +206,7 @@ index 4c0e0e5..500ee34 100644
  
  - (void)windowDidBecomeKey: (NSNotification *)notification
  /* cf. x_detect_focus_change(), x_focus_changed(), x_new_focus_frame() */
-@@ -5586,6 +5601,14 @@ ns_term_shutdown (int sig)
+@@ -5692,6 +5707,14 @@ not_in_argv (NSString *arg)
    [NSApp registerServicesMenuSendTypes: ns_send_types
                             returnTypes: nil];
  
