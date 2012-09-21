@@ -58,7 +58,7 @@ export CFLAGS
     --build=x86_64-apple-darwin \
     --without-dbus --with-ns
 
-make bootstrap -j8 || make clean bootstrap && make install
+make bootstrap -j8 || exit 1 && make install
 
 for f in $STRINGS; do
     sed -e "s/$VNUM/$VERS/" -i '' $f
