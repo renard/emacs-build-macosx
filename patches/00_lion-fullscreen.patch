@@ -54,16 +54,16 @@ index 907d3ea..0974c04 100644
 @@ -1013,7 +1013,7 @@ free_frame_tool_bar (FRAME_PTR f)
     -------------------------------------------------------------------------- */
  {
-   BLOCK_INPUT;
+   block_input ();
 -  [[FRAME_NS_VIEW (f) toolbar] setVisible: NO];
 +  [[FRAME_NS_VIEW (f) window] setToolbar: nil];
    FRAME_TOOLBAR_HEIGHT (f) = 0;
-   UNBLOCK_INPUT;
+   unblock_input ();
  }
 @@ -1030,6 +1030,8 @@ update_frame_tool_bar (FRAME_PTR f)
    EmacsToolbar *toolbar = [view toolbar];
  
-   BLOCK_INPUT;
+   block_input ();
 +  [window setToolbar: toolbar];
 +
    [toolbar clearActive];
