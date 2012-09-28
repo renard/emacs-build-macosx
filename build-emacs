@@ -34,6 +34,8 @@ done
 
 rsync -aE ../site-lisp lisp
 
+sed -e "s/@@GIT_COMMIT@@/$REV/" -i '' lisp/site-start.el
+
 STRINGS="
  nextstep/Cocoa/Emacs.base/Contents/Resources/English.lproj/InfoPlist.strings
  nextstep/Cocoa/Emacs.base/Contents/Info.plist"
