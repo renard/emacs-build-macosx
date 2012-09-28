@@ -5,7 +5,7 @@
 ;; Author: Sébastien Gross <seb•ɑƬ•chezwam•ɖɵʈ•org>
 ;; Keywords: emacs, 
 ;; Created: 2012-09-21
-;; Last changed: 2012-09-28 23:49:10
+;; Last changed: 2012-09-28 23:56:56
 ;; Licence: WTFPL, grab your copy here: http://sam.zoy.org/wtfpl/
 
 ;; This file is NOT part of GNU Emacs.
@@ -42,11 +42,6 @@ information.")
 (defvar emacs-patches-list
   (directory-files emacs-patches-directory nil ".*\\.patch" nil)
   "List of all patches applied when Emacs was built.")
-
-(defun view-emacs-patches-dir ()
-  "Open `dired' in `emacs-patches-directory'."
-  (interactive)
-  (dired emacs-patches-directory))
 
 (defun view-emacs-patches ()
   "Open `dired' in `emacs-patches-directory'."
