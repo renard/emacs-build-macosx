@@ -24,10 +24,10 @@ git archive --format tar $commit | tar -C ../${BUILD_DIR} -xvf -
 
 REV=`git log -n 1 --no-color --pretty='format:%h' ${commit}`
 TIMESTAMP=`git log -n 1 --no-color --pretty='format:%at' ${commit}`
-
+PATCH_LIST=`find ../patches/ -type f -name '*.patch'`
 cd ../${BUILD_DIR}
 
-for f in `find ../patches/ -type f -name '*.patch'`; do
+for f in ${PATCH_LIST}; do
     echo "Applying patch `basename $f`"
     patch -p1 -i $f
 done
@@ -71,7 +71,8 @@ mkdir _out
 rsync -aE nextstep/Emacs.app _out
 rsync -aE ../emacs-dmg/* _out
 rsync -aE ../emacs/src  _out/Emacs.app/Contents/Resources/
-
+mkdir dir _out/Emacs.app/Contents/Resources/patches
+cp ${PATCH_LIST} _out/Emacs.app/Contents/Resources/patches
 
 # Copy dylibs into the Emacs.app package
 for f in `find  _out/Emacs.app/Contents/MacOS/ -type f`; do
