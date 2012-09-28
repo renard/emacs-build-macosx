@@ -17,7 +17,7 @@
 ;;; Code:
 
 (setq source-directory
-      (expand-file-name  "../src" data-directory))
+      (expand-file-name  ".." data-directory))
 
 
 (provide 'site-start)
