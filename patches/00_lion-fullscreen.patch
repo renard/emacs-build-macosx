@@ -1,8 +1,8 @@
 diff --git a/lisp/term/ns-win.el b/lisp/term/ns-win.el
-index 06b6747..97cbc3d 100644
+index e31362b..611c87b 100644
 --- a/lisp/term/ns-win.el
 +++ b/lisp/term/ns-win.el
-@@ -928,6 +928,10 @@ See the documentation of `create-fontset-from-fontset-spec' for the format.")
+@@ -942,6 +942,10 @@ See the documentation of `create-fontset-from-fontset-spec' for the format.")
  (add-to-list 'frame-creation-function-alist '(ns . x-create-frame-with-faces))
  (add-to-list 'window-system-initialization-alist '(ns . ns-initialize-window-system))
  
@@ -14,10 +14,10 @@ index 06b6747..97cbc3d 100644
  (provide 'ns-win)
  
 diff --git a/src/nsfns.m b/src/nsfns.m
-index 072005d..72a7348 100644
+index 7a22ac5..d45941c 100644
 --- a/src/nsfns.m
 +++ b/src/nsfns.m
-@@ -2588,6 +2588,20 @@ Value is t if tooltip was open, nil otherwise.  */)
+@@ -2590,6 +2590,20 @@ Value is t if tooltip was open, nil otherwise.  */)
    return Qt;
  }
  
@@ -38,7 +38,7 @@ index 072005d..72a7348 100644
  
  /* ==========================================================================
  
-@@ -2744,6 +2758,8 @@ be used as the image of the icon representing the frame.  */);
+@@ -2746,6 +2760,8 @@ be used as the image of the icon representing the frame.  */);
    defsubr (&Sx_show_tip);
    defsubr (&Sx_hide_tip);
  
@@ -48,10 +48,10 @@ index 072005d..72a7348 100644
    check_window_system_func = check_ns;
  
 diff --git a/src/nsmenu.m b/src/nsmenu.m
-index 907d3ea..0974c04 100644
+index d0ea8f5..0e6c6fb 100644
 --- a/src/nsmenu.m
 +++ b/src/nsmenu.m
-@@ -1013,7 +1013,7 @@ free_frame_tool_bar (FRAME_PTR f)
+@@ -1008,7 +1008,7 @@ free_frame_tool_bar (FRAME_PTR f)
     -------------------------------------------------------------------------- */
  {
    block_input ();
@@ -60,7 +60,7 @@ index 907d3ea..0974c04 100644
    FRAME_TOOLBAR_HEIGHT (f) = 0;
    unblock_input ();
  }
-@@ -1030,6 +1030,8 @@ update_frame_tool_bar (FRAME_PTR f)
+@@ -1025,6 +1025,8 @@ update_frame_tool_bar (FRAME_PTR f)
    EmacsToolbar *toolbar = [view toolbar];
  
    block_input ();
@@ -70,10 +70,10 @@ index 907d3ea..0974c04 100644
  
    /* update EmacsToolbar as in GtkUtils, build items list */
 diff --git a/src/nsterm.m b/src/nsterm.m
-index 0b26508..cb7ff61 100644
+index a4eaad4..4600ccd 100644
 --- a/src/nsterm.m
 +++ b/src/nsterm.m
-@@ -5443,38 +5443,7 @@ not_in_argv (NSString *arg)
+@@ -5454,38 +5454,7 @@ not_in_argv (NSString *arg)
  #endif
    if (rows < MINHEIGHT)
      rows = MINHEIGHT;
@@ -113,7 +113,7 @@ index 0b26508..cb7ff61 100644
  /*fprintf (stderr,"    ...size became %.0f x %.0f  (%d x %d)\n",frameSize.width,frameSize.height,cols,rows); */
  
    return frameSize;
-@@ -5496,14 +5465,6 @@ not_in_argv (NSString *arg)
+@@ -5514,14 +5483,6 @@ not_in_argv (NSString *arg)
    NSTRACE (windowDidResize);
  /*fprintf (stderr,"windowDidResize: %.0f\n",[theWindow frame].size.height); */
  
@@ -125,13 +125,14 @@ index 0b26508..cb7ff61 100644
 -    }
 -#endif /* NS_IMPL_COCOA */
 -
-   /* Avoid loop under GNUstep due to call at beginning of this function.
-      (x_set_window_size causes a resize which causes
-      a "windowDidResize" which calls x_set_window_size).  */
-@@ -5522,6 +5483,60 @@ not_in_argv (NSString *arg)
+   if (cols > 0 && rows > 0)
+     {
+       [self updateFrameSize: YES];
+@@ -5530,2 +5491,2 @@ not_in_argv (NSString *arg)
    ns_send_appdefined (-1);
  }
- 
+
++ /* Do not use Emacs upstram windowDidEnterFullScreen since it is broken */
 +#if defined (NS_IMPL_COCOA) && MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_7
 +- (void)windowDidEnterFullScreen:(NSNotification *)notification
 +{
@@ -155,6 +156,7 @@ index 0b26508..cb7ff61 100644
 +}
 +#endif
 +
++ /* Do not use Emacs upstram windowDidExitFullScreen since it is broken */
 +#if defined (NS_IMPL_COCOA) && MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_7
 +- (void)windowDidExitFullScreen:(NSNotification *)notification
 +{
@@ -189,7 +191,7 @@ index 0b26508..cb7ff61 100644
  
  - (void)windowDidBecomeKey: (NSNotification *)notification
  /* cf. x_detect_focus_change(), x_focus_changed(), x_new_focus_frame() */
-@@ -5692,6 +5707,14 @@ not_in_argv (NSString *arg)
+@@ -5708,6 +5723,14 @@ not_in_argv (NSString *arg)
    [NSApp registerServicesMenuSendTypes: ns_send_types
                             returnTypes: nil];
  
@@ -204,3 +206,40 @@ index 0b26508..cb7ff61 100644
    ns_window_num++;
    return self;
  }
+@@ -5853,36 +5876,12 @@ not_in_argv (NSString *arg)
+   fs_before_fs = fs_state;
+ }
+ 
+-- (void)windowDidEnterFullScreen:(NSNotification *)notification
+-{
+-  [self setFSValue: FULLSCREEN_BOTH];
+-#ifdef NEW_STYLE_FS
+-  // Fix bad background.
+-  if ([toolbar isVisible])
+-    {
+-      [toolbar setVisible:NO];
+-      [toolbar setVisible:YES];
+-    }
+-#else
+-  [self windowDidBecomeKey:notification];
+-  [nonfs_window orderOut:self];
+-#endif
+-}
+-
+ - (void)windowWillExitFullScreen:(NSNotification *)notification
+ {
+   if (next_maximized != -1)
+     fs_before_fs = next_maximized;
+ }
+ 
+-- (void)windowDidExitFullScreen:(NSNotification *)notification
+-{
+-  [self setFSValue: fs_before_fs];
+-  fs_before_fs = -1;
+-  if (next_maximized != -1)
+-    [[self window] performZoom:self];
+-}
+-
+ - (void)toggleFullScreen: (id)sender
+ {
+ #ifdef NEW_STYLE_FS
