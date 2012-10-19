@@ -70,7 +70,7 @@ index d0ea8f5..0e6c6fb 100644
  
    /* update EmacsToolbar as in GtkUtils, build items list */
 diff --git a/src/nsterm.m b/src/nsterm.m
-index a4eaad4..4600ccd 100644
+index a4eaad4..73d8080 100644
 --- a/src/nsterm.m
 +++ b/src/nsterm.m
 @@ -5454,38 +5454,7 @@ not_in_argv (NSString *arg)
@@ -128,12 +128,12 @@ index a4eaad4..4600ccd 100644
    if (cols > 0 && rows > 0)
      {
        [self updateFrameSize: YES];
-@@ -5530,2 +5491,2 @@ not_in_argv (NSString *arg)
-   ns_send_appdefined (-1);
+@@ -5531,6 +5492,63 @@ not_in_argv (NSString *arg)
  }
-
-+ /* Do not use Emacs upstram windowDidEnterFullScreen since it is broken */
+ 
+ 
 +#if defined (NS_IMPL_COCOA) && MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_7
++/* Do not use Emacs upstram windowDidEnterFullScreen since it is broken */
 +- (void)windowDidEnterFullScreen:(NSNotification *)notification
 +{
 +    NSTRACE (windowDidEnterFullScreen);
@@ -156,8 +156,8 @@ index a4eaad4..4600ccd 100644
 +}
 +#endif
 +
-+ /* Do not use Emacs upstram windowDidExitFullScreen since it is broken */
 +#if defined (NS_IMPL_COCOA) && MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_7
++/* Do not use Emacs upstram windowDidExitFullScreen since it is broken */
 +- (void)windowDidExitFullScreen:(NSNotification *)notification
 +{
 +    NSTRACE (windowDidExitFullScreen);
@@ -188,10 +188,11 @@ index a4eaad4..4600ccd 100644
 +}
 +#endif
 +
- 
++
  - (void)windowDidBecomeKey: (NSNotification *)notification
  /* cf. x_detect_focus_change(), x_focus_changed(), x_new_focus_frame() */
-@@ -5708,6 +5723,14 @@ not_in_argv (NSString *arg)
+ {
+@@ -5708,6 +5726,14 @@ not_in_argv (NSString *arg)
    [NSApp registerServicesMenuSendTypes: ns_send_types
                             returnTypes: nil];
  
@@ -206,7 +207,7 @@ index a4eaad4..4600ccd 100644
    ns_window_num++;
    return self;
  }
-@@ -5853,36 +5876,12 @@ not_in_argv (NSString *arg)
+@@ -5853,36 +5879,12 @@ not_in_argv (NSString *arg)
    fs_before_fs = fs_state;
  }
  
