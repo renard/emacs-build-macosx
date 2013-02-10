@@ -1,8 +1,8 @@
 diff --git a/lisp/term/ns-win.el b/lisp/term/ns-win.el
-index e31362b..611c87b 100644
+index b8baaa0..9d25ff3 100644
 --- a/lisp/term/ns-win.el
 +++ b/lisp/term/ns-win.el
-@@ -942,6 +942,10 @@ See the documentation of `create-fontset-from-fontset-spec' for the format.")
+@@ -940,6 +940,10 @@ See the documentation of `create-fontset-from-fontset-spec' for the format.")
  (add-to-list 'frame-creation-function-alist '(ns . x-create-frame-with-faces))
  (add-to-list 'window-system-initialization-alist '(ns . ns-initialize-window-system))
  
@@ -14,10 +14,10 @@ index e31362b..611c87b 100644
  (provide 'ns-win)
  
 diff --git a/src/nsfns.m b/src/nsfns.m
-index 7a22ac5..d45941c 100644
+index fac61d2..9dbbc47 100644
 --- a/src/nsfns.m
 +++ b/src/nsfns.m
-@@ -2590,6 +2590,20 @@ Value is t if tooltip was open, nil otherwise.  */)
+@@ -2580,6 +2580,21 @@ Value is t if tooltip was open, nil otherwise.  */)
    return Qt;
  }
  
@@ -35,10 +35,11 @@ index 7a22ac5..d45941c 100644
 +
 +  return Qnil;
 +}
++
  
  /* ==========================================================================
  
-@@ -2746,6 +2760,8 @@ be used as the image of the icon representing the frame.  */);
+@@ -2736,6 +2751,8 @@ be used as the image of the icon representing the frame.  */);
    defsubr (&Sx_show_tip);
    defsubr (&Sx_hide_tip);
  
@@ -48,18 +49,9 @@ index 7a22ac5..d45941c 100644
    check_window_system_func = check_ns;
  
 diff --git a/src/nsmenu.m b/src/nsmenu.m
-index d0ea8f5..0e6c6fb 100644
+index 6899e35..be691db 100644
 --- a/src/nsmenu.m
 +++ b/src/nsmenu.m
-@@ -1008,7 +1008,7 @@ free_frame_tool_bar (FRAME_PTR f)
-    -------------------------------------------------------------------------- */
- {
-   block_input ();
--  [[FRAME_NS_VIEW (f) toolbar] setVisible: NO];
-+  [[FRAME_NS_VIEW (f) window] setToolbar: nil];
-   FRAME_TOOLBAR_HEIGHT (f) = 0;
-   unblock_input ();
- }
 @@ -1025,6 +1025,8 @@ update_frame_tool_bar (FRAME_PTR f)
    EmacsToolbar *toolbar = [view toolbar];
  
@@ -69,11 +61,21 @@ index d0ea8f5..0e6c6fb 100644
    [toolbar clearActive];
  
    /* update EmacsToolbar as in GtkUtils, build items list */
+@@ -1082,9 +1084,6 @@ update_frame_tool_bar (FRAME_PTR f)
+ #undef TOOLPROP
+     }
+ 
+-  if (![toolbar isVisible])
+-      [toolbar setVisible: YES];
+-
+   if ([toolbar changed])
+     {
+       /* inform app that toolbar has changed */
 diff --git a/src/nsterm.m b/src/nsterm.m
-index a4eaad4..73d8080 100644
+index 3544cfd..bf1b618 100644
 --- a/src/nsterm.m
 +++ b/src/nsterm.m
-@@ -5454,38 +5454,7 @@ not_in_argv (NSString *arg)
+@@ -5471,38 +5471,7 @@ not_in_argv (NSString *arg)
  #endif
    if (rows < MINHEIGHT)
      rows = MINHEIGHT;
@@ -102,7 +104,7 @@ index a4eaad4..73d8080 100644
 -            old_title = xstrdup (t);
 -          }
 -        size_title = xmalloc (strlen (old_title) + 40);
--	esprintf (size_title, "%s  —  (%d x %d)", old_title, cols, rows);
+-	 esprintf (size_title, "%s  —  (%d x %d)", old_title, cols, rows);
 -        [window setTitle: [NSString stringWithUTF8String: size_title]];
 -        [window display];
 -        xfree (size_title);
@@ -113,7 +115,7 @@ index a4eaad4..73d8080 100644
  /*fprintf (stderr,"    ...size became %.0f x %.0f  (%d x %d)\n",frameSize.width,frameSize.height,cols,rows); */
  
    return frameSize;
-@@ -5514,14 +5483,6 @@ not_in_argv (NSString *arg)
+@@ -5531,14 +5500,6 @@ not_in_argv (NSString *arg)
    NSTRACE (windowDidResize);
  /*fprintf (stderr,"windowDidResize: %.0f\n",[theWindow frame].size.height); */
  
@@ -128,12 +130,11 @@ index a4eaad4..73d8080 100644
    if (cols > 0 && rows > 0)
      {
        [self updateFrameSize: YES];
-@@ -5531,6 +5492,63 @@ not_in_argv (NSString *arg)
+@@ -5548,6 +5509,65 @@ not_in_argv (NSString *arg)
  }
  
  
 +#if defined (NS_IMPL_COCOA) && MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_7
-+/* Do not use Emacs upstram windowDidEnterFullScreen since it is broken */
 +- (void)windowDidEnterFullScreen:(NSNotification *)notification
 +{
 +    NSTRACE (windowDidEnterFullScreen);
@@ -143,6 +144,7 @@ index a4eaad4..73d8080 100644
 +    int w = (int)wr.size.width - emacsframe->border_width;
 +    int h = (int)wr.size.height;
 +    NSView *view = FRAME_NS_VIEW (emacsframe);
++    [toolbar setVisible: NO];
 +    cols = FRAME_PIXEL_WIDTH_TO_TEXT_COLS(emacsframe, w);
 +    rows = FRAME_PIXEL_HEIGHT_TO_TEXT_LINES(emacsframe, h);
 +    /* NSLog(@"window_size=%dx%d (%dx%d)", w, h, cols, rows); */
@@ -153,11 +155,11 @@ index a4eaad4..73d8080 100644
 +    cancel_mouse_face (emacsframe);
 +    [view setFrame: NSMakeRect (0, 0, w, h)];
 +    ns_send_appdefined (-1);
++    [toolbar setVisible: NO];
 +}
 +#endif
 +
 +#if defined (NS_IMPL_COCOA) && MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_7
-+/* Do not use Emacs upstram windowDidExitFullScreen since it is broken */
 +- (void)windowDidExitFullScreen:(NSNotification *)notification
 +{
 +    NSTRACE (windowDidExitFullScreen);
@@ -168,6 +170,7 @@ index a4eaad4..73d8080 100644
 +    int h = (int)wr.size.height
 +    - FRAME_NS_TITLEBAR_HEIGHT (emacsframe)
 +    - FRAME_TOOLBAR_HEIGHT (emacsframe);
++      [toolbar setVisible: NO];
 +    cols = FRAME_PIXEL_WIDTH_TO_TEXT_COLS(emacsframe, w);
 +    rows = FRAME_PIXEL_HEIGHT_TO_TEXT_LINES(emacsframe, h);
 +    /* NSLog(@"window_size=%dx%d (%dx%d)", w, h, cols, rows); */
@@ -177,6 +180,7 @@ index a4eaad4..73d8080 100644
 +    SET_FRAME_GARBAGED (emacsframe);
 +    cancel_mouse_face (emacsframe);
 +    ns_send_appdefined (-1);
++    [toolbar setVisible: NO];
 +}
 +#endif
 +
@@ -192,7 +196,7 @@ index a4eaad4..73d8080 100644
  - (void)windowDidBecomeKey: (NSNotification *)notification
  /* cf. x_detect_focus_change(), x_focus_changed(), x_new_focus_frame() */
  {
-@@ -5708,6 +5726,14 @@ not_in_argv (NSString *arg)
+@@ -5725,6 +5745,14 @@ not_in_argv (NSString *arg)
    [NSApp registerServicesMenuSendTypes: ns_send_types
                             returnTypes: nil];
  
@@ -207,7 +211,7 @@ index a4eaad4..73d8080 100644
    ns_window_num++;
    return self;
  }
-@@ -5853,36 +5879,12 @@ not_in_argv (NSString *arg)
+@@ -5872,21 +5900,6 @@ not_in_argv (NSString *arg)
    fs_before_fs = fs_state;
  }
  
@@ -226,10 +230,10 @@ index a4eaad4..73d8080 100644
 -  [nonfs_window orderOut:self];
 -#endif
 -}
--
+ 
  - (void)windowWillExitFullScreen:(NSNotification *)notification
  {
-   if (next_maximized != -1)
+@@ -5894,13 +5907,6 @@ not_in_argv (NSString *arg)
      fs_before_fs = next_maximized;
  }
  
@@ -240,7 +244,6 @@ index a4eaad4..73d8080 100644
 -  if (next_maximized != -1)
 -    [[self window] performZoom:self];
 -}
--
+ 
  - (void)toggleFullScreen: (id)sender
  {
- #ifdef NEW_STYLE_FS
