@@ -37,13 +37,15 @@ for f in ${PATCH_LIST}; do
 done
 
 STRINGS="
- nextstep/Cocoa/Emacs.base/Contents/Resources/English.lproj/InfoPlist.strings
- nextstep/Cocoa/Emacs.base/Contents/Info.plist"
+  nextstep/templates/Emacs.desktop.in
+  nextstep/templates/Info-gnustep.plist.in
+  nextstep/templates/Info.plist.in
+  nextstep/templates/InfoPlist.strings.in"
 
 DAY=`date -u -r $TIMESTAMP +"%Y-%m-%d_%H-%M-%S"`
 ORIG=`grep ^AC_INIT configure.ac`
 VNUM=`echo $ORIG | cut -d\  -f2-999 | sed s/\)$//`
-VERS="$VNUM $DAY Git $REV"
+VERS="$DAY Git $REV"
 DESCR="Emacs_Cocoa_${VNUM}_${DAY}_Git_${REV}"
 
 #autogen/copy_autogen
@@ -56,15 +58,16 @@ CFLAGS="${CFLAGS} -pipe -march=nocona"
 export CC=gcc
 export CFLAGS
 
+for f in $STRINGS; do
+    sed -e "s/@version@/@version@ $VERS/" -i '' $f
+done
+
+
 ./configure \
     --build=x86_64-apple-darwin \
     --without-dbus --with-ns
 
 make bootstrap -j8 || exit 1 && make install
-
-for f in $STRINGS; do
-    sed -e "s/$VNUM/$VERS/" -i '' $f
-done
 
 
 rm -rf _out
