@@ -39,12 +39,13 @@ index fac61d2..9dbbc47 100644
  
  /* ==========================================================================
  
-@@ -2736,6 +2751,8 @@ be used as the image of the icon representing the frame.  */);
+@@ -2736,5 +2751,7 @@ be used as the image of the icon representing the frame.  */);
    defsubr (&Sx_show_tip);
    defsubr (&Sx_hide_tip);
  
 +  defsubr (&Sns_toggle_fullscreen_internal);
 +
-   /* used only in fontset.c */
-   check_window_system_func = check_ns;
+   as_status = 0;
+   as_script = Qnil;
+
  
