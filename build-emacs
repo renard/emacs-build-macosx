@@ -17,9 +17,9 @@ if test -n "$1"; then
     commit="$1"
 else
     commit="origin/master"
+    git pull
 fi
 
-git pull
 git archive --format tar $commit | tar -C ../${BUILD_DIR} -xvf -
 
 REV=`git log -n 1 --no-color --pretty='format:%h' ${commit}`
