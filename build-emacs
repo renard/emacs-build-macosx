@@ -44,7 +44,7 @@ STRINGS="
 
 DAY=`date -u -r $TIMESTAMP +"%Y-%m-%d_%H-%M-%S"`
 ORIG=`grep ^AC_INIT configure.ac`
-VNUM=`echo $ORIG | cut -d\  -f2-999 | sed s/\)$//`
+VNUM=`echo $ORIG | cut -d, -f2 | sed 's/ //g'`
 VERS="$DAY Git $REV"
 DESCR="Emacs_Cocoa_${VNUM}_${DAY}_Git_${REV}"
 
