@@ -5,7 +5,7 @@
 ;; Author: Sébastien Gross <seb•ɑƬ•chezwam•ɖɵʈ•org>
 ;; Keywords: emacs, 
 ;; Created: 2012-09-21
-;; Last changed: 2013-03-03 20:10:56
+;; Last changed: 2014-11-02 22:52:30
 ;; Licence: WTFPL, grab your copy here: http://sam.zoy.org/wtfpl/
 
 ;; This file is NOT part of GNU Emacs.
@@ -16,10 +16,9 @@
 
 ;;; Code:
 
-(eval-when-compile
-  (require 'cl)
-  (require 'dired)
-  (require 'files))
+(require 'cl)
+(require 'dired)
+(require 'files)
 
 (setq source-directory
       (expand-file-name  ".." data-directory))
