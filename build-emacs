@@ -67,7 +67,7 @@ done
     --build=x86_64-apple-darwin \
     --without-dbus --with-ns
 
-make bootstrap -j8 || exit 1 && make install
+make bootstrap -j4 || exit 1 && make install
 
 
 rm -rf _out
