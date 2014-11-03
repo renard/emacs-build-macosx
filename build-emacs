@@ -82,12 +82,6 @@ cp ${PATCH_LIST} _out/Emacs.app/Contents/Resources/patches
 # http://stackoverflow.com/questions/7470637/dynamic-library-in-application-bundle-mac-os-x
 # http://stackoverflow.com/questions/4677044/how-to-use-dylib-in-mac-os-x-c
 # Copy dylibs into the Emacs.app package
-# for f in `find  _out/Emacs.app/Contents/MacOS/ -type f`; do
-#     dylibbundler -of -cd  -b -x $f \
-# 	-d _out/Emacs.app/Contents/Resources/lib \
-# 	-p @executable_path/../Resources/lib/
-# done
-
 fix_dynlib() {
     local f=$1
     local target
@@ -100,7 +94,6 @@ fix_dynlib() {
 	    install_name_tool -id \
 			      @executable_path/../Resources/lib/$(basename $lib) \
 			      "$target"
-
 	    fix_dynlib "$target"
 	fi
 	install_name_tool -change $lib \
