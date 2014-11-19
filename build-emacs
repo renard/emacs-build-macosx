@@ -107,7 +107,8 @@ for f in `find  _out/Emacs.app/Contents/MacOS/ -type f`; do
 done
 
 
-
+#http://stackoverflow.com/questions/96882/how-do-i-create-a-nice-looking-dmg-for-mac-os-x-using-command-line-tools
+# http://asmaloney.com/2013/07/howto/packaging-a-mac-os-x-application-using-a-dmg/
 
 Rez -o "_out/More.../Alternative Icon" _out/icon.r
 rm _out/icon.r
