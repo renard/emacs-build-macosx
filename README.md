@@ -88,3 +88,44 @@ If you want to build a specific version you just can pass the commit id or
 tag to the `build-emacs` script:
 
 	./build-emacs emacs-24.4
+
+## configuration report
+
+This is a summary of activated options given during the configure part:
+
+    Configured for `x86_64-apple-darwin'.
+    
+      Where should the build process find the source code?    .
+      What compiler should emacs be built with?               gcc -std=gnu99  -pipe -march=nocona
+      Should Emacs use the GNU version of malloc?             no
+        (The GNU allocators don't work with this system configuration.)
+      Should Emacs use a relocating allocator for buffers?    no
+      Should Emacs use mmap(2) for buffer allocation?         no
+      What window system should Emacs use?                    nextstep
+      What toolkit should Emacs use?                          none
+      Where do we find X Windows header files?                /usr/X11/include
+      Where do we find X Windows libraries?                   /usr/X11/lib
+      Does Emacs use -lXaw3d?                                 no
+      Does Emacs use -lXpm?                                   no
+      Does Emacs use -ljpeg?                                  no
+      Does Emacs use -ltiff?                                  no
+      Does Emacs use a gif library?                           no
+      Does Emacs use a png library?                           no
+      Does Emacs use -lrsvg-2?                                no
+      Does Emacs use imagemagick?                             yes
+      Does Emacs support sound?                               no
+      Does Emacs use -lgpm?                                   no
+      Does Emacs use -ldbus?                                  no
+      Does Emacs use -lgconf?                                 no
+      Does Emacs use GSettings?                               no
+      Does Emacs use a file notification library?             no
+      Does Emacs use access control lists?                    yes
+      Does Emacs use -lselinux?                               no
+      Does Emacs use -lgnutls?                                yes
+      Does Emacs use -lxml2?                                  yes
+      Does Emacs use -lfreetype?                              no
+      Does Emacs use -lm17n-flt?                              no
+      Does Emacs use -lotf?                                   no
+      Does Emacs use -lxft?                                   no
+      Does Emacs directly use zlib?                           yes
+      Does Emacs use toolkit scroll bars?                     yes
