@@ -82,20 +82,27 @@ cp ${PATCH_LIST} _out/Emacs.app/Contents/Resources/patches
 # http://stackoverflow.com/questions/7470637/dynamic-library-in-application-bundle-mac-os-x
 # http://stackoverflow.com/questions/4677044/how-to-use-dylib-in-mac-os-x-c
 # Copy dylibs into the Emacs.app package
+
 fix_dynlib() {
     local f=$1
+    local indent="$2"
     local target
+    local lib
+    echo "$indent* Examinating $f"
     for lib in $(otool -L $f  | grep -F '.dylib ' | grep -v '/usr/lib/' |\
+		 grep -v '[[:space:]]\+@executable_path/' |\
 		 sed -n 's/^[[:space:]]*\(.*\) (.*/\1/p' | uniq); do
         target="_out/Emacs.app/Contents/Resources/lib/$(basename $lib)"
 	if ! test -e "$target"; then
+	    echo "$indent  - copying $(basename $lib)"
 	    cp "$lib" "$target"
 	    chmod 644 "$target"
 	    install_name_tool -id \
 			      @executable_path/../Resources/lib/$(basename $lib) \
 			      "$target"
-	    fix_dynlib "$target"
+	    fix_dynlib "$target" "  $indent"
 	fi
+	echo "$indent  - fixing $(basename $lib)"
 	install_name_tool -change $lib \
 			  @executable_path/../Resources/lib/$(basename $lib) $f
     done
