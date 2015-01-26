@@ -78,7 +78,7 @@ You also need to checkout an Emacs git repository. I suggest you to use
 	git clone git://git.savannah.gnu.org/emacs.git
 
 
-## Building Emacs for OSX X
+## Building Emacs for OSX
 
 Once all requirements are installed you can just run:
 
