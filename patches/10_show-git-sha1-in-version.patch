@@ -1,25 +1,25 @@
 diff --git a/lisp/version.el b/lisp/version.el
-index 1fb3828..163f9e0 100644
+index 43103fd..ef771a0 100644
 --- a/lisp/version.el
 +++ b/lisp/version.el
-@@ -56,8 +56,8 @@ to the system configuration; look at `system-configuration' instead."
+@@ -59,8 +59,8 @@ to the system configuration; look at `system-configuration' instead."
    (interactive "P")
    (let ((version-string
           (format (if (not (called-interactively-p 'interactive))
--		     "GNU Emacs %s (%s%s%s)\n of %s on %s"
--		   "GNU Emacs %s (%s%s%s) of %s on %s")
-+		     "GNU Emacs %s (%s%s%s%s)\n of %s on %s"
-+		   "GNU Emacs %s (%s%s%s%s) of %s on %s")
+-		     "GNU Emacs %s (%s%s%s%s)\n of %s"
+-		   "GNU Emacs %s (%s%s%s%s) of %s")
++                     "GNU Emacs %s (%s%s%s%s%s)\n of %s"
++                   "GNU Emacs %s (%s%s%s%s%s) of %s")
                   emacs-version
  		 system-configuration
  		 (cond ((featurep 'motif)
-@@ -73,6 +73,9 @@ to the system configuration; look at `system-configuration' instead."
+@@ -79,6 +79,9 @@ to the system configuration; look at `system-configuration' instead."
  		     (format ", %s scroll bars"
  			     (capitalize (symbol-name x-toolkit-scroll-bars)))
  		   "")
-+		 (if (boundp 'emacs-version-git-commit)
++                 (if (boundp 'emacs-version-git-commit)
 +		     (format ", git sha1 %s" emacs-version-git-commit)
 +		   "")
- 		 (format-time-string "%Y-%m-%d" emacs-build-time)
-                  emacs-build-system)))
+ 		 (format-time-string "%Y-%m-%d" emacs-build-time))))
      (if here
+         (insert version-string)
