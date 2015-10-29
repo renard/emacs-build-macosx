@@ -16,7 +16,8 @@ what are the differences with
 
 - A stand alone `Emacs.App` is generated. This means you only need
   dependencies for the building process. Then you can deploy the `Emacs.App`
-  on any OSX desktop.
+  on any OSX desktop. For the curious all non-system libraries are stored
+  into the `Contents/Resources/lib` directory.
 
 - Some very basic patches are applied:
 
@@ -26,7 +27,7 @@ what are the differences with
 
   - Show git commit ID in `emacs-version`:
   ```
-  GNU Emacs 24.4.50.1 (x86_64-apple-darwin, NS apple-appkit-1187.40, git sha1 10292e9) of 2014-04-28 on scrat
+  GNU Emacs 25.0.50.1 (x86_64-apple-darwin, NS appkit-1404.13 Version 10.11.1 (Build 15B42), git sha1 d5ee655) of 2015-10-28
   ```
  All patches are included in `emacs-patches-directory` (which is located in
  the application bundle at `Contents/Resources/patches`). A list of all
@@ -45,6 +46,9 @@ what are the differences with
 	- `~/.emacs.d-EMACS_MAJOR_MINOR_VERSION` (i.e. `~/.emacs.d-24.4`)
 	- `~/.emacs.d`
 
+  This is useful if you need to test your configuration against several
+  versions at the same time.
+
 - The C source files are included in `Contents/Resources/src` in the
   application bundle.
 
@@ -56,7 +60,7 @@ First you need to install following tools (you may want to use
 
 - `automake`
 - `imagemagick`: you need to activate some options:
-  - `--enable-hdri`
+  - `--with-hdri`
   - `--with-fontconfig`
   - `--with-ghostscript`
   - `--with-jp2`
