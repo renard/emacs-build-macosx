@@ -24,7 +24,7 @@ git archive --format tar $commit | tar -C ../${BUILD_DIR} -xvf -
 
 REV=`git log -n 1 --no-color --pretty='format:%h' ${commit}`
 TIMESTAMP=`git log -n 1 --no-color --pretty='format:%at' ${commit}`
-PATCH_LIST=`find ../patches/ -type f -name '*.patch'`
+PATCH_LIST=`find ../patches/ -name '*.patch'`
 cd ../${BUILD_DIR}
 
 rsync -aE ../site-lisp lisp
