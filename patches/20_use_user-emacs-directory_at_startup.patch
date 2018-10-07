@@ -1,17 +1,1 @@
-diff --git a/lisp/startup.el b/lisp/startup.el
-index ad31a7a..3ca929a 100644
---- a/lisp/startup.el
-+++ b/lisp/startup.el
-@@ -1067,8 +1067,10 @@ please check its value")
- 			(let ((otherfile
- 			       (expand-file-name
- 				"init"
--				(file-name-as-directory
--				 (concat "~" init-file-user "/.emacs.d")))))
-+                               ;; First try `user-emacs-directory'
-+				(or user-emacs-directory
-+				    (file-name-as-directory
-+				     (concat "~" init-file-user "/.emacs.d"))))))
- 			  (load otherfile t t)
- 
- 			  ;; If we did not find the user's init file,
+20_use_user-emacs-directory_at_startup.patch+26

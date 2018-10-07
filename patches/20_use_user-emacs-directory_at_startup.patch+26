@@ -1,0 +1,17 @@
+diff --git a/lisp/startup.el b/lisp/startup.el
+index 4eb71abaac..978cf0d8f7 100644
+--- a/lisp/startup.el
++++ b/lisp/startup.el
+@@ -1323,8 +1323,10 @@ please check its value")
+      (lambda ()
+        (expand-file-name
+         "init"
+-        (file-name-as-directory
+-         (concat "~" init-file-user "/.emacs.d"))))
++        ;; First try `user-emacs-directory'
++        (or user-emacs-directory
++            (file-name-as-directory
++             (concat "~" init-file-user "/.emacs.d")))))
+      (not inhibit-default-init))
+ 
+     (when (and deactivate-mark transient-mark-mode)
