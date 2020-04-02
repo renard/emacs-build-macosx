@@ -65,7 +65,9 @@ done
 
 ./configure \
     --build=x86_64-apple-darwin \
-    --without-dbus --with-ns
+    --without-dbus \
+    --with-imagemagick \
+    --with-ns
 
 make bootstrap -j8 || exit 1 && make install
 
