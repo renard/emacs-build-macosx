@@ -100,7 +100,7 @@ This is a summary of activated options given during the configure part:
     Configured for `x86_64-apple-darwin'.
     
       Where should the build process find the source code?    .
-      What compiler should emacs be built with?               gcc -std=gnu99  -pipe -march=nocona
+      What compiler should emacs be built with?               gcc  -pipe -march=nocona
       Should Emacs use the GNU version of malloc?             no
         (The GNU allocators don't work with this system configuration.)
       Should Emacs use a relocating allocator for buffers?    no
@@ -116,20 +116,32 @@ This is a summary of activated options given during the configure part:
       Does Emacs use a gif library?                           no
       Does Emacs use a png library?                           no
       Does Emacs use -lrsvg-2?                                no
+      Does Emacs use cairo?                                   no
+      Does Emacs use -llcms2?                                 yes
       Does Emacs use imagemagick?                             yes
       Does Emacs support sound?                               no
       Does Emacs use -lgpm?                                   no
       Does Emacs use -ldbus?                                  no
       Does Emacs use -lgconf?                                 no
       Does Emacs use GSettings?                               no
-      Does Emacs use a file notification library?             no
+      Does Emacs use a file notification library?             yes (kqueue)
       Does Emacs use access control lists?                    yes
       Does Emacs use -lselinux?                               no
       Does Emacs use -lgnutls?                                yes
       Does Emacs use -lxml2?                                  yes
       Does Emacs use -lfreetype?                              no
+      Does Emacs use HarfBuzz?                                no
       Does Emacs use -lm17n-flt?                              no
       Does Emacs use -lotf?                                   no
       Does Emacs use -lxft?                                   no
+      Does Emacs use -lsystemd?                               no
+      Does Emacs use -ljansson?                               yes
+      Does Emacs use -lgmp?                                   yes
       Does Emacs directly use zlib?                           yes
+      Does Emacs have dynamic modules support?                yes
       Does Emacs use toolkit scroll bars?                     yes
+      Does Emacs support Xwidgets (requires gtk3)?            no
+      Does Emacs have threading support in lisp?              yes
+      Does Emacs support the portable dumper?                 yes
+      Does Emacs support legacy unexec dumping?               no
+      Which dumping strategy does Emacs use?                  pdumper
