@@ -29,7 +29,7 @@ cd ../${BUILD_DIR}
 
 rsync -aE ../site-lisp lisp
 
-sed -e "s/@@GIT_COMMIT@@/$REV/" -i '' lisp/site-lisp/site-start.el
+sed -e "s/@@GIT_COMMIT@@/$REV/" -i '' lisp/site-lisp/early-site-start.el
 
 for f in ${PATCH_LIST}; do
     echo "Applying patch `basename $f`"
