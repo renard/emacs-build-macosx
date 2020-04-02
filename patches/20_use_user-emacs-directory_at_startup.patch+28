@@ -1,0 +1,33 @@
+diff --git a/lisp/startup.el b/lisp/startup.el
+index 1f545c6692..402372984d 100644
+--- a/lisp/startup.el
++++ b/lisp/startup.el
+@@ -1218,6 +1218,28 @@ please check its value")
+ 	  (setq xdg-dir (concat "~" init-file-user "/.config/emacs/"))
+ 	  (startup--xdg-or-homedot xdg-dir init-file-user)))
+ 
++  ;; Per version Emacs config directory is defined in site-start. If
++  ;; a directory is found, use it from now.
++  ;;
++  ;; this allow use of specific directories such as:
++  ;;   - ~/.emacs.d-GIT-COMMIT/
++  ;;   - ~/.emacs.d-EMACS-VERSION/
++  ;;   - ~/.emacs.d-EMACS-MAJOR-VERSION/
++  ;;   - ~/.emacs.d-EMACS-MAJOR-VERSION.EMACS-MINOR-VERSION/
++  ;;   - ~/.emacs.d/
++  ;;
++  ;; This is useful to debug multiple Emacs versions.
++  ;;
++  ;; This has to be set at build time:
++  ;; https://stackoverflow.com/questions/23103800/is-startup-el-really-used
++  (if site-run-file
++      ;; Sites should not disable the startup screen.
++      ;; Only individuals should disable the startup screen.
++      (let ((inhibit-startup-screen inhibit-startup-screen))
++        (load "early-site-start" t t)))
++  (when (and (boundp 'user-emacs-directory) user-emacs-directory)
++    (setq startup-init-directory user-emacs-directory))
++
+   ;; Load the early init file, if found.
+   (startup--load-user-init-file
+    (lambda ()
