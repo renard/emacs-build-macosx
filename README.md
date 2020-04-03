@@ -146,3 +146,20 @@ This is a summary of activated options given during the configure part:
       Does Emacs support the portable dumper?                 yes
       Does Emacs support legacy unexec dumping?               no
       Which dumping strategy does Emacs use?                  pdumper
+  
+## Version
+
+This works with GNU Emacs versions:
+
+* 25
+* 26
+* 27
+* 28
+
+Some patches may be adapted in the `patches` directory.
+
+## Copyright
+
+Copyright © 2012-2020 Sébastien Gross <seb•ɑƬ•chezwam•ɖɵʈ•org>.
+
+See [LICENSE](LICENSE).
