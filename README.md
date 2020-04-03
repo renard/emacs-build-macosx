@@ -75,6 +75,7 @@ First you need to install following tools (you may want to use
   - `--with-quantum-depth-16`
   - `--with-webp`
 - `gnutls`
+- `librsvg`
 
 You also need to checkout an Emacs git repository. I suggest you to use
 [Savannah's](this) which is the most up-to-date.
@@ -97,7 +98,7 @@ tag to the `build-emacs` script:
 
 This is a summary of activated options given during the configure part:
 
-    Configured for `x86_64-apple-darwin'.
+    Configured for 'x86_64-apple-darwin'.
     
       Where should the build process find the source code?    .
       What compiler should emacs be built with?               gcc  -pipe -march=nocona
@@ -115,7 +116,7 @@ This is a summary of activated options given during the configure part:
       Does Emacs use -ltiff?                                  no
       Does Emacs use a gif library?                           no
       Does Emacs use a png library?                           no
-      Does Emacs use -lrsvg-2?                                no
+      Does Emacs use -lrsvg-2?                                yes
       Does Emacs use cairo?                                   no
       Does Emacs use -llcms2?                                 yes
       Does Emacs use imagemagick?                             yes
