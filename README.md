@@ -59,6 +59,9 @@ First you need to install following tools (you may want to use
 [brew](http://brew.sh/) for that):
 
 - `automake`
+- `jpeg`
+- `giflib`
+- `libtiff`
 - `imagemagick`: you need to activate some options:
   - `--with-hdri`
   - `--with-fontconfig`
@@ -96,6 +99,30 @@ tag to the `build-emacs` script:
 
 ## configuration report
 
+Some options are only available on specific OS.
+
+- GNU malloc: Not supported on darwin.
+- relocating allocator for buffers: Not supported on darwin (does not work
+  with system `malloc`).
+- Xaw3d: Not supported on darwin.
+- Xpm: Not supported on darwin.
+- Cairo: Only for X11 environment.
+- Sound: Only for GNU/Linux, FreeBSD, NetBSD, MinGW, Cygwin
+- GPM: Only for GNU/Linux console.
+- dbus: Only for GNU/Linux.
+- gconf: Only for X11 environment.
+- GSetting: Only for GNU/Linux.
+- selinux: Only for GNU/Linux.
+- freetype: Only for X11 environment.
+- HarfBuzz: Only for X11 environment.
+- m17n-flt: Only for X11 environment.
+- otf: Only for X11 environment.
+- xft: Only for X11 environment.
+- systemd: Not supported on darwin.
+- Xwidgets: Not tested.
+
+See [](build/configure.ac) for details.
+
 This is a summary of activated options given during the configure part:
 
     Configured for 'x86_64-apple-darwin'.
@@ -108,18 +135,19 @@ This is a summary of activated options given during the configure part:
       Should Emacs use mmap(2) for buffer allocation?         no
       What window system should Emacs use?                    nextstep
       What toolkit should Emacs use?                          none
-      Where do we find X Windows header files?                /usr/X11/include
-      Where do we find X Windows libraries?                   /usr/X11/lib
+      Where do we find X Windows header files?                NONE
+      Where do we find X Windows libraries?                   NONE
       Does Emacs use -lXaw3d?                                 no
       Does Emacs use -lXpm?                                   no
-      Does Emacs use -ljpeg?                                  no
-      Does Emacs use -ltiff?                                  no
-      Does Emacs use a gif library?                           no
-      Does Emacs use a png library?                           no
+      Does Emacs use -ljpeg?                                  yes
+      Does Emacs use -ltiff?                                  yes
+      Does Emacs use a gif library?                           yes -lgif
+      Does Emacs use a png library?                           yes -L/usr/local/Cellar/libpng/1.6.37/lib -lpng16 -lz
       Does Emacs use -lrsvg-2?                                yes
       Does Emacs use cairo?                                   no
       Does Emacs use -llcms2?                                 yes
       Does Emacs use imagemagick?                             yes
+      Does Emacs use native APIs for images?                  yes (ns)
       Does Emacs support sound?                               no
       Does Emacs use -lgpm?                                   no
       Does Emacs use -ldbus?                                  no
@@ -146,7 +174,7 @@ This is a summary of activated options given during the configure part:
       Does Emacs support the portable dumper?                 yes
       Does Emacs support legacy unexec dumping?               no
       Which dumping strategy does Emacs use?                  pdumper
-  
+
 ## Version
 
 This works with GNU Emacs versions:
