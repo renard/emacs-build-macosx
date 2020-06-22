@@ -79,6 +79,9 @@ First you need to install following tools (you may want to use
   - `--with-webp`
 - `gnutls`
 - `librsvg`
+- `texinfo`
+- `pkg-config`
+- `jansson`
 
 You also need to checkout an Emacs git repository. I suggest you to use
 [Savannah's](this) which is the most up-to-date.
