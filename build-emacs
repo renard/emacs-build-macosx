@@ -69,7 +69,8 @@ done
     --with-imagemagick \
     --with-ns
 
-make bootstrap -j8 || exit 1 && make install
+NCPU=$(getconf _NPROCESSORS_ONLN)
+make bootstrap -j$NCPU || exit 1 && make install -j$NCPU
 
 
 rm -rf _out
