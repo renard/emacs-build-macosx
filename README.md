@@ -52,6 +52,8 @@ what are the differences with
 - The C source files are included in `Contents/Resources/src` in the
   application bundle.
 
+- A small emacs wrapper is deployed into `Contents/MacOS/bin/emacs` to
+  call emacs from the CLI. You can link this file to your search path.
 
 ## Requirements
 

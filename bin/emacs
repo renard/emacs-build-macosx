@@ -1,0 +1,29 @@
+#!/bin/sh
+
+# Simple wrapper to launch emacs from the command line.
+#
+# Some paths (where Emacs where build from) are hardcoded. If emacs is
+# a symlink to Emacs.app/Contents/MacOS/Emacs, it fails at startup
+# complaining some files could not be found. Using this wrapper solves
+# the issue.
+#
+# See: https://github.com/renard/emacs-build-macosx/issues/3.
+#
+
+
+SEARCH_DIRS="
+/Applications
+~/Applications
+"
+EMACS_APP=Emacs.app
+
+emacs_dir=
+
+for d in $SEARCH_DIRS; do
+    if test -d $d/$EMACS_APP; then
+	emacs_dir=$d/$EMACS_APP
+	break
+    fi
+done
+
+$emacs_dir/Contents/MacOS/Emacs "$@"

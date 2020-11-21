@@ -81,6 +81,7 @@ rsync -aE ${ROOT_DIR}/emacs-dmg/* _out
 rsync -aE ${ROOT_DIR}/emacs/src  _out/Emacs.app/Contents/Resources/
 mkdir dir _out/Emacs.app/Contents/Resources/patches
 cp ${PATCH_LIST} _out/Emacs.app/Contents/Resources/patches
+rsync -aE ${ROOT_DIR}/bin/*  _out/Emacs.app/Contents/MacOS/bin/
 
 # http://stackoverflow.com/questions/7470637/dynamic-library-in-application-bundle-mac-os-x
 # http://stackoverflow.com/questions/4677044/how-to-use-dylib-in-mac-os-x-c
