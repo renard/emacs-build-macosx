@@ -4,7 +4,7 @@
 set -e
 
 ROOT_DIR="`pwd`"
-BUILD_DIR=build
+BUILD_DIR=/tmp/emacs-build
 SRC_DIR=emacs
 
 
@@ -20,14 +20,14 @@ else
     git pull
 fi
 
-git archive --format tar $commit | tar -C ../${BUILD_DIR} -xvf -
+git archive --format tar $commit | tar -C ${BUILD_DIR} -xvf -
 
 REV=`git log -n 1 --no-color --pretty='format:%h' ${commit}`
 TIMESTAMP=`git log -n 1 --no-color --pretty='format:%at' ${commit}`
-PATCH_LIST=`find ../patches/ -name '*.patch'`
-cd ../${BUILD_DIR}
+PATCH_LIST=`find ${ROOT_DIR}/patches/ -name '*.patch'`
+cd ${BUILD_DIR}
 
-rsync -aE ../site-lisp lisp
+rsync -aE ${ROOT_DIR}/site-lisp lisp
 
 sed -e "s/@@GIT_COMMIT@@/$REV/" -i '' lisp/site-lisp/early-site-start.el
 
@@ -77,8 +77,8 @@ rm -rf _out
 mkdir _out
 
 rsync -aE nextstep/Emacs.app _out
-rsync -aE ../emacs-dmg/* _out
-rsync -aE ../emacs/src  _out/Emacs.app/Contents/Resources/
+rsync -aE ${ROOT_DIR}/emacs-dmg/* _out
+rsync -aE ${ROOT_DIR}/emacs/src  _out/Emacs.app/Contents/Resources/
 mkdir dir _out/Emacs.app/Contents/Resources/patches
 cp ${PATCH_LIST} _out/Emacs.app/Contents/Resources/patches
 
@@ -131,7 +131,7 @@ SetFile -a Vc _out/background.*
 
 rm -f ../tmp.dmg
 hdiutil makehybrid -hfs -hfs-volume-name "$DESCR" -hfs-openfolder _out _out -o ../tmp.dmg
-hdiutil convert -format UDZO ../tmp.dmg -o "../${DESCR}.dmg"
+hdiutil convert -format UDZO ../tmp.dmg -o "${ROOT_DIR}/${DESCR}.dmg"
 
 rm -rf ${BUILD_DIR}
 rm -rf tmp.dmg
