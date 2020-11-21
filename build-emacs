@@ -69,7 +69,8 @@ done
     --with-imagemagick \
     --with-ns
 
-make bootstrap -j8 || exit 1 && make install
+NCPU=$(getconf _NPROCESSORS_ONLN)
+make bootstrap -j$NCPU || exit 1 && make install -j$NCPU
 
 
 rm -rf _out
@@ -92,21 +93,21 @@ fix_dynlib() {
     local lib
     echo "$indent* Examinating $f"
     for lib in $(otool -L $f  | grep -F '.dylib ' | grep -v '/usr/lib/' |\
-		 grep -v '[[:space:]]\+@executable_path/' |\
-		 sed -n 's/^[[:space:]]*\(.*\) (.*/\1/p' | uniq); do
+                 grep -v '[[:space:]]\+@executable_path/' |\
+                 sed -n 's/^[[:space:]]*\(.*\) (.*/\1/p' | uniq); do
         target="_out/Emacs.app/Contents/Resources/lib/$(basename $lib)"
-	if ! test -e "$target"; then
-	    echo "$indent  - copying $(basename $lib)"
-	    cp "$lib" "$target"
-	    chmod 644 "$target"
-	    install_name_tool -id \
-			      @executable_path/../Resources/lib/$(basename $lib) \
-			      "$target"
-	    fix_dynlib "$target" "  $indent"
-	fi
-	echo "$indent  - fixing $(basename $lib)"
-	install_name_tool -change $lib \
-			  @executable_path/../Resources/lib/$(basename $lib) $f
+        if ! test -e "$target"; then
+            echo "$indent  - copying $(basename $lib)"
+            cp "$lib" "$target"
+            chmod 644 "$target"
+            install_name_tool -id \
+                              @executable_path/../Resources/lib/$(basename $lib) \
+                              "$target"
+            fix_dynlib "$target" "  $indent"
+        fi
+        echo "$indent  - fixing $(basename $lib)"
+        install_name_tool -change $lib \
+                          @executable_path/../Resources/lib/$(basename $lib) $f
     done
 }
 
