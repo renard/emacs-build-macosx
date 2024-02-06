@@ -131,7 +131,7 @@ See [](build/configure.ac) for details.
 This is a summary of activated options given during the configure part:
 
 ```
-Configured for 'x86_64-apple-darwin'.
+Configured for 'x86_64-apple-darwin22.6.0'.
 
   Where should the build process find the source code?    .
   What compiler should emacs be built with?               gcc  -pipe -march=nocona
@@ -141,22 +141,24 @@ Configured for 'x86_64-apple-darwin'.
   Should Emacs use mmap(2) for buffer allocation?         no
   What window system should Emacs use?                    nextstep
   What toolkit should Emacs use?                          none
-  Where do we find X Windows header files?                NONE
-  Where do we find X Windows libraries?                   NONE
+  Where do we find X Windows header files?                Standard dirs
+  Where do we find X Windows libraries?                   Standard dirs
   Does Emacs use -lXaw3d?                                 no
   Does Emacs use -lXpm?                                   no
   Does Emacs use -ljpeg?                                  yes
   Does Emacs use -ltiff?                                  yes
   Does Emacs use a gif library?                           yes -lgif
-  Does Emacs use a png library?                           yes -L/usr/local/Cellar/libpng/1.6.37/lib -lpng16 -lz
+  Does Emacs use a png library?                           yes -L/usr/local/opt/libpng/lib -lpng16
   Does Emacs use -lrsvg-2?                                yes
+  Does Emacs use -lwebp?                                  yes
+  Does Emacs use -lsqlite3?                               yes
   Does Emacs use cairo?                                   no
   Does Emacs use -llcms2?                                 yes
-  Does Emacs use imagemagick?                             yes
+  Does Emacs use imagemagick?                             no
   Does Emacs use native APIs for images?                  yes (ns)
   Does Emacs support sound?                               no
   Does Emacs use -lgpm?                                   no
-  Does Emacs use -ldbus?                                  no
+  Does Emacs use -ldbus?                                  yes
   Does Emacs use -lgconf?                                 no
   Does Emacs use GSettings?                               no
   Does Emacs use a file notification library?             yes (kqueue)
@@ -171,6 +173,7 @@ Configured for 'x86_64-apple-darwin'.
   Does Emacs use -lxft?                                   no
   Does Emacs use -lsystemd?                               no
   Does Emacs use -ljansson?                               yes
+  Does Emacs use -ltree-sitter?                           no
   Does Emacs use the GMP library?                         yes
   Does Emacs directly use zlib?                           yes
   Does Emacs have dynamic modules support?                yes
@@ -180,6 +183,9 @@ Configured for 'x86_64-apple-darwin'.
   Does Emacs support the portable dumper?                 yes
   Does Emacs support legacy unexec dumping?               no
   Which dumping strategy does Emacs use?                  pdumper
+  Does Emacs have native lisp compiler?                   no
+  Does Emacs use version 2 of the X Input Extension?      no
+  Does Emacs generate a smaller-size Japanese dictionary? no
 ```
 
 ## Version
@@ -190,6 +196,7 @@ This works with GNU Emacs versions:
 * 26
 * 27
 * 28
+* 29
 
 Some patches may be adapted in the `patches` directory.
 
