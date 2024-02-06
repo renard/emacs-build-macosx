@@ -5,7 +5,7 @@
 ;; Author: Sébastien Gross <seb•ɑƬ•chezwam•ɖɵʈ•org>
 ;; Keywords: emacs, 
 ;; Created: 2012-09-21
-;; Last changed: 2020-04-02 22:08:59
+;; Last changed: 2024-02-06 02:06:23
 ;; Licence: WTFPL, grab your copy here: http://sam.zoy.org/wtfpl/
 
 ;; This file is NOT part of GNU Emacs.
@@ -27,7 +27,20 @@
   "Directory containing all patches used when Emacs was built.")
 
 (defvar emacs-patches-list
-  (directory-files emacs-patches-directory nil ".*\\.patch" nil)
+  (condition-case err
+      (directory-files emacs-patches-directory nil ".*\\.patch" nil)
+    ;; When Emacs is build, the sanity-check target runs emacs and
+    ;; requires site-start. If the `emacs-patches-directory' is not
+    ;; found the sanity-check target fails.
+    ;;
+    ;; 408c904d6602cf269c128a5b5e7b9d0e0b4f7d69 fix this but as not
+    ;; been merged to the Emacs-29 build cycle. To prevent a build
+    ;; failure, return `nil' if `emacs-patches-directory' is not
+    ;; found.
+    ;;
+    ;; See Emacs bug 66721 for further details:
+    ;; https://mail.gnu.org/archive/html/bug-gnu-emacs/2023-10/msg01505.html
+    (file-missing nil))
   "List of all patches applied when Emacs was built.")
 
 (defun view-emacs-patches ()
